@@ -2,19 +2,19 @@
    In a later phase this gets replaced by data from Supabase tables. */
 
 export const ORG = {
-  name: 'Rz Esports',
+  name: 'RzRevelation',
   short: 'Rz',
   game: 'Marvel Rivals',
   tagline:
-    'An Rz esports house competing in Marvel Rivals — three rosters, one community, one climb.',
+    'An RzRevelation esports house competing in Marvel Rivals — three rosters, one community, one climb.',
 }
 
 export const socials = {
-  discord: 'https://discord.gg/rzesports',
-  x: 'https://x.com/rzesports',
-  twitch: 'https://twitch.tv/rzesports',
-  youtube: 'https://youtube.com/@rzesports',
-  instagram: 'https://instagram.com/rzesports',
+  discord: 'https://discord.gg/rzrevelation',
+  x: 'https://x.com/rzrevelation',
+  twitch: 'https://twitch.tv/rzrevelation',
+  youtube: 'https://youtube.com/@rzrevelation',
+  instagram: 'https://instagram.com/rzrevelation',
 }
 
 export type Role = 'Vanguard' | 'Duelist' | 'Strategist'
@@ -39,6 +39,22 @@ export type Team = {
 }
 
 export const teams: Team[] = [
+  {
+    slug: 'revenants',
+    name: 'Rz Revenants',
+    tagline: 'No mercy',
+    accent: 'sky',
+    blurb:
+      'The veteran squad — heavy aggression, deep map knowledge, and zero patience. Revenants punish mistakes before you know you made one.',
+    roster: [
+      { id: 'rn-wraith', gamertag: 'Sib', name: 'Kai Mwangi', role: 'Vanguard', main: 'Dr. Strange', accent: 'sky', bio: 'Dives the backline and drags it down with him. Pure disruption, every fight.' },
+      { id: 'rn-tomb', gamertag: 'Zonix', name: 'Ivan Petrov', role: 'Vanguard', main: 'Hulk', accent: 'orange', bio: 'Locks down zones and makes territory cost blood. The squad fights on Tomb’s terms.' },
+      { id: 'rn-riot', gamertag: 'Art', name: 'Elena Costa', role: 'Duelist', main: 'Magik', accent: 'sky', bio: 'Owns the air. Riot rains damage from angles ground teams can’t answer.' },
+      { id: 'rn-cinder', gamertag: 'Fallen', name: 'Noah Brandt', role: 'Duelist', main: 'Iron Man', accent: 'orange', bio: 'Deletes clustered teams in a blink. Punishes every grouped push instantly.' },
+      { id: 'rn-hex', gamertag: 'Levi', name: 'Yuki Sato', role: 'Strategist', main: 'Invisible Woman', accent: 'sky', bio: 'Heals and flips fights with one well-timed swap. The glue holding the aggression together.' },
+      { id: 'rn-relic', gamertag: 'Falkiri', name: 'Omar Haddad', role: 'Strategist', main: 'Loki', accent: 'orange', bio: 'Sneaky sustain and the occasional match-ending swallow. Underestimate Relic once.' },
+    ],
+  },
   {
     slug: 'recharge',
     name: 'Rz Recharge',
@@ -69,22 +85,6 @@ export const teams: Team[] = [
       { id: 'rv-specter', gamertag: 'Specter', name: 'Aiko Tanaka', role: 'Duelist', main: 'Black Panther', accent: 'sky', bio: 'In, out, three kills, gone. The flank threat that warps how teams have to defend.' },
       { id: 'rv-halo', gamertag: 'Halo', name: 'Priya Nair', role: 'Strategist', main: 'Mantis', accent: 'orange', bio: 'Perfect uptime and clutch sleeps. The calm voice on comms when the round goes sideways.' },
       { id: 'rv-sol', gamertag: 'Sol', name: 'Diego Salas', role: 'Strategist', main: 'Adam Warlock', accent: 'sky', bio: 'Resurrects the round single-handed. Sol turns lost fights into highlight reels.' },
-    ],
-  },
-  {
-    slug: 'revenants',
-    name: 'Rz Revenants',
-    tagline: 'No mercy',
-    accent: 'sky',
-    blurb:
-      'The veteran squad — heavy aggression, deep map knowledge, and zero patience. Revenants punish mistakes before you know you made one.',
-    roster: [
-      { id: 'rn-wraith', gamertag: 'Wraith', name: 'Kai Mwangi', role: 'Vanguard', main: 'Venom', accent: 'sky', bio: 'Dives the backline and drags it down with him. Pure disruption, every fight.' },
-      { id: 'rn-tomb', gamertag: 'Tomb', name: 'Ivan Petrov', role: 'Vanguard', main: 'Peni Parker', accent: 'orange', bio: 'Locks down zones and makes territory cost blood. The squad fights on Tomb’s terms.' },
-      { id: 'rn-riot', gamertag: 'Riot', name: 'Elena Costa', role: 'Duelist', main: 'Iron Man', accent: 'sky', bio: 'Owns the air. Riot rains damage from angles ground teams can’t answer.' },
-      { id: 'rn-cinder', gamertag: 'Cinder', name: 'Noah Brandt', role: 'Duelist', main: 'Scarlet Witch', accent: 'orange', bio: 'Deletes clustered teams in a blink. Punishes every grouped push instantly.' },
-      { id: 'rn-hex', gamertag: 'Hex', name: 'Yuki Sato', role: 'Strategist', main: 'Cloak & Dagger', accent: 'sky', bio: 'Heals and flips fights with one well-timed swap. The glue holding the aggression together.' },
-      { id: 'rn-relic', gamertag: 'Relic', name: 'Omar Haddad', role: 'Strategist', main: 'Jeff the Land Shark', accent: 'orange', bio: 'Sneaky sustain and the occasional match-ending swallow. Underestimate Relic once.' },
     ],
   },
 ]

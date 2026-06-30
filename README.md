@@ -1,6 +1,6 @@
-# Rz Esports
+# RzRevelation
 
-Site for **Rz Esports** — a competitive Marvel Rivals house with three rosters
+Site for **RzRevelation** — a competitive Marvel Rivals house with three rosters
 (Rz Recharge, Rz Revelation, Rz Revenants).
 Built with React + TypeScript + Vite + Tailwind, backed by Supabase, with Stripe for the store. Deploys to Cloudflare Pages.
 

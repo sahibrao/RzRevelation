@@ -17,7 +17,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <span className="logo-badge clip-sm">Rz</span>
-              <span className="wordmark">ESPORTS<span style={{ color: 'var(--color-orange)' }}>.</span></span>
+              <span className="wordmark">RzRevelation<span style={{ color: 'var(--color-orange)' }}>.</span></span>
             </div>
             <p style={{ color: 'var(--color-mute)', maxWidth: '32ch', lineHeight: 1.6 }}>
               {ORG.tagline}

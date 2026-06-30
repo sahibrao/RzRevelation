@@ -18,7 +18,7 @@ function Wordmark() {
     <NavLink to="/" className="flex items-center gap-3" aria-label={`${ORG.name} home`}>
       <span className="logo-badge clip-sm">Rz</span>
       <span className="wordmark">
-        ESPORTS<span style={{ color: 'var(--color-orange)' }}>.</span>
+        RZREVELATION<span style={{ color: 'var(--color-orange)' }}>.</span>
       </span>
     </NavLink>
   )
