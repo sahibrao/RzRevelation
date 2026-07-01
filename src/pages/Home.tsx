@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
-import { ORG, socials, teams, products, announcements } from '../data/placeholders'
+import { ORG, socials, products } from '../data/placeholders'
+import { useTeams } from '../lib/hooks'
+import { useAnnouncements } from '../lib/hooks'
 import TeamCard from '../components/TeamCard'
 import ProductCard from '../components/ProductCard'
 import AnnouncementCard from '../components/AnnouncementCard'
@@ -19,6 +21,9 @@ function SectionHead({ eyebrow, title, to, cta }: { eyebrow: string; title: stri
 }
 
 export default function Home() {
+  const { teams } = useTeams()
+  const { announcements } = useAnnouncements()
+
   return (
     <>
       {/* ── hero ───────────────────────────── */}
@@ -73,28 +78,32 @@ export default function Home() {
       </section>
 
       {/* ── latest ─────────────────────────── */}
-      <section className="section">
-        <div className="shell">
-          <SectionHead eyebrow="From the org" title="Latest" to="/blog" cta="All announcements" />
-          <div className="grid gap-6 md:grid-cols-3">
-            {announcements.map((post) => (
-              <AnnouncementCard key={post.id} post={post} />
-            ))}
+      {announcements.length > 0 && (
+        <section className="section">
+          <div className="shell">
+            <SectionHead eyebrow="From the org" title="Latest" to="/blog" cta="All announcements" />
+            <div className="grid gap-6 md:grid-cols-3">
+              {announcements.slice(0, 3).map((post) => (
+                <AnnouncementCard key={post.id} post={post} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── teams ──────────────────────────── */}
-      <section className="section">
-        <div className="shell">
-          <SectionHead eyebrow="The house" title="The teams" to="/team" cta="All teams" />
-          <div className="grid gap-6 md:grid-cols-3">
-            {teams.map((team) => (
-              <TeamCard key={team.slug} team={team} />
-            ))}
+      {teams.length > 0 && (
+        <section className="section">
+          <div className="shell">
+            <SectionHead eyebrow="The house" title="The teams" to="/team" cta="All teams" />
+            <div className="grid gap-6 md:grid-cols-3">
+              {teams.map((team) => (
+                <TeamCard key={team.slug} team={team} />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── store ──────────────────────────── */}
       <section className="section">

@@ -1,13 +1,23 @@
-import type { Announcement } from '../data/placeholders'
+import type { DbAnnouncement } from '../lib/types'
 
-export default function AnnouncementCard({ post }: { post: Announcement }) {
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  })
+}
+
+export default function AnnouncementCard({ post }: { post: DbAnnouncement }) {
+  const author = post.author?.display_name ?? 'Rz Staff'
+
   return (
     <article className="panel clip" style={{ padding: '1.4rem 1.5rem' }}>
       <span className="bracket" />
       <div className="flex items-center gap-3 mb-3" style={{ flexWrap: 'wrap' }}>
         <span className="tag-orange tag">{post.category}</span>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem', color: 'var(--color-mute)' }}>
-          {post.date}
+          {formatDate(post.published_at)}
         </span>
       </div>
       <h3 style={{ fontSize: '1.5rem', marginBottom: '0.6rem' }}>{post.title}</h3>
@@ -16,7 +26,7 @@ export default function AnnouncementCard({ post }: { post: Announcement }) {
       </p>
       <div className="flex items-center justify-between">
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem', color: 'var(--color-mute)' }}>
-          by {post.author}
+          by {author}
         </span>
         <span style={{ color: 'var(--color-sky-bright)', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.9rem' }}>
           Read →

@@ -1,11 +1,21 @@
 import { useParams, Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import PlayerCard from '../components/PlayerCard'
-import { getTeam } from '../data/placeholders'
+import { useTeam } from '../lib/hooks'
 
 export default function TeamDetail() {
   const { slug } = useParams()
-  const team = slug ? getTeam(slug) : undefined
+  const { team, loading } = useTeam(slug)
+
+  if (loading) {
+    return (
+      <div className="shell section" style={{ minHeight: '50vh' }}>
+        <p style={{ color: 'var(--color-mute)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
+          Loading…
+        </p>
+      </div>
+    )
+  }
 
   if (!team) {
     return (
@@ -31,7 +41,7 @@ export default function TeamDetail() {
           </Link>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" style={{ marginTop: '1.5rem' }}>
-            {team.roster.map((player) => (
+            {team.players.map((player) => (
               <PlayerCard key={player.id} player={player} />
             ))}
           </div>

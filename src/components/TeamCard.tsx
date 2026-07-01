@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
-import type { Team } from '../data/placeholders'
+import type { DbTeam } from '../lib/types'
 
-export default function TeamCard({ team }: { team: Team }) {
+export default function TeamCard({ team }: { team: DbTeam }) {
   const accentColor = team.accent === 'orange' ? 'var(--color-orange)' : 'var(--color-sky)'
 
   return (
@@ -31,15 +31,15 @@ export default function TeamCard({ team }: { team: Team }) {
         </p>
 
         <div className="flex items-center gap-2 mt-4" style={{ flexWrap: 'wrap' }}>
-          {team.roster.slice(0, 4).map((p) => (
+          {team.players.slice(0, 4).map((p) => (
             <span key={p.id} className="tag">{p.gamertag}</span>
           ))}
-          <span className="tag tag-orange">+{team.roster.length - 4} more</span>
+          <span className="tag tag-orange">+{team.players.length - 4} more</span>
         </div>
 
         <div className="flex items-center justify-between" style={{ marginTop: '1.4rem' }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem', color: 'var(--color-mute)' }}>
-            {team.roster.length} players
+            {team.players.length} players
           </span>
           <span style={{ color: accentColor, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.92rem' }}>
             View roster →

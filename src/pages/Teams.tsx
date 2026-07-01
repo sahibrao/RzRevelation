@@ -1,8 +1,11 @@
 import PageHeader from '../components/PageHeader'
 import TeamCard from '../components/TeamCard'
-import { teams, ORG } from '../data/placeholders'
+import { useTeams } from '../lib/hooks'
+import { ORG } from '../data/placeholders'
 
 export default function Teams() {
+  const { teams, loading } = useTeams()
+
   return (
     <>
       <PageHeader
@@ -13,11 +16,17 @@ export default function Teams() {
 
       <section style={{ paddingBottom: '4rem' }}>
         <div className="shell">
-          <div className="grid gap-6 md:grid-cols-3">
-            {teams.map((team) => (
-              <TeamCard key={team.slug} team={team} />
-            ))}
-          </div>
+          {loading ? (
+            <p style={{ color: 'var(--color-mute)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}>
+              Loading…
+            </p>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-3">
+              {teams.map((team) => (
+                <TeamCard key={team.slug} team={team} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </>
