@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { ORG, socials } from '../data/placeholders'
 import { useAuth } from '../lib/auth'
+import { useProfile } from '../lib/hooks'
 import { avatarUrl, displayName, initials } from '../lib/user'
 import AccountMenu from './AccountMenu'
 
@@ -27,6 +28,8 @@ function Wordmark() {
 export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { user, loading, signInWithDiscord, signOut } = useAuth()
+  const { profile } = useProfile()
+  const canManage = profile?.role === 'admin' || profile?.role === 'captain' || profile?.role === 'coach'
   const navigate = useNavigate()
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -117,6 +120,19 @@ export default function Navbar() {
                 >
                   Settings
                 </button>
+                {canManage && (
+                  <button
+                    className="navlink"
+                    type="button"
+                    style={{ padding: '0.6rem 0', textAlign: 'left' }}
+                    onClick={() => {
+                      setOpen(false)
+                      navigate('/manage')
+                    }}
+                  >
+                    Manage team
+                  </button>
+                )}
                 <button
                   className="navlink"
                   type="button"

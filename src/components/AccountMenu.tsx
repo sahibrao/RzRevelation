@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
+import { useProfile } from '../lib/hooks'
 import { avatarUrl, displayName, initials } from '../lib/user'
 
 export default function AccountMenu() {
   const { user, loading, signInWithDiscord, signOut } = useAuth()
+  const { profile } = useProfile()
+  const canManage = profile?.role === 'admin' || profile?.role === 'captain' || profile?.role === 'coach'
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
@@ -72,6 +75,26 @@ export default function AccountMenu() {
             </svg>
             Settings
           </button>
+
+          {canManage && (
+            <button
+              className="menu-item"
+              role="menuitem"
+              type="button"
+              onClick={() => {
+                setOpen(false)
+                navigate('/manage')
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              Manage team
+            </button>
+          )}
 
           <button
             className="menu-item menu-item-danger"

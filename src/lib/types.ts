@@ -1,6 +1,6 @@
 export type Accent = 'orange' | 'sky'
 export type PlayerRole = 'Vanguard' | 'Duelist' | 'Strategist'
-export type UserRole = 'admin' | 'captain' | 'player' | 'member'
+export type UserRole = 'admin' | 'captain' | 'coach' | 'player' | 'member'
 
 export type DbProfile = {
   id: string

@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { DbTeam, DbAnnouncement } from './types'
+import type { DbTeam, DbAnnouncement, DbProfile, DbPlayer } from './types'
 import { teams as seedTeams, announcements as seedAnnouncements } from '../data/placeholders'
 
 // ── Fallback helpers (used when Supabase isn't configured) ───
@@ -91,4 +91,65 @@ export async function fetchAnnouncements(): Promise<DbAnnouncement[]> {
     return placeholderAnnouncements()
   }
   return (data ?? []) as DbAnnouncement[]
+}
+
+export async function fetchProfile(userId: string): Promise<DbProfile | null> {
+  if (!supabase) return null
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .single()
+
+  if (error) {
+    console.error('[db] fetchProfile:', error.message)
+    return null
+  }
+  return data as DbProfile
+}
+
+// ── Team / roster management (admins, captains, coaches) ────────
+// Row Level Security enforces who can actually write what — these just
+// surface a friendly error when Supabase isn't configured or the write
+// gets rejected server-side.
+
+type MutationResult = { error: string | null }
+
+const NOT_CONFIGURED: MutationResult = { error: 'Supabase is not configured.' }
+
+export async function updateTeamDetails(
+  teamId: string,
+  updates: { tagline?: string; blurb?: string },
+): Promise<MutationResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  const { error } = await supabase.from('teams').update(updates).eq('id', teamId)
+  return { error: error?.message ?? null }
+}
+
+export async function createPlayer(
+  player: Omit<DbPlayer, 'created_at'>,
+): Promise<MutationResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  const { error } = await supabase.from('players').insert(player)
+  return { error: error?.message ?? null }
+}
+
+export async function updatePlayer(
+  playerId: string,
+  updates: Partial<Omit<DbPlayer, 'id' | 'team_id' | 'created_at'>>,
+): Promise<MutationResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  const { error } = await supabase.from('players').update(updates).eq('id', playerId)
+  return { error: error?.message ?? null }
+}
+
+export async function deletePlayer(playerId: string): Promise<MutationResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  const { error } = await supabase.from('players').delete().eq('id', playerId)
+  return { error: error?.message ?? null }
 }

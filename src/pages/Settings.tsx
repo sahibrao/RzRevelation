@@ -1,11 +1,22 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import { useAuth } from '../lib/auth'
+import { useProfile } from '../lib/hooks'
 import { supabase } from '../lib/supabase'
 import { avatarUrl, displayName, initials } from '../lib/user'
 
+const ROLE_LABEL: Record<string, string> = {
+  admin: 'Admin',
+  captain: 'Captain',
+  coach: 'Coach',
+  player: 'Player',
+  member: 'Member',
+}
+
 export default function Settings() {
   const { user, signOut } = useAuth()
+  const { profile } = useProfile()
   const [name, setName] = useState(user ? displayName(user) : '')
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 
@@ -13,7 +24,8 @@ export default function Settings() {
 
   const avatar = avatarUrl(user)
   const provider = (user.app_metadata?.provider as string) || 'discord'
-  const role = ((user.user_metadata?.role as string) || 'Member')
+  const role = profile ? (ROLE_LABEL[profile.role] ?? profile.role) : 'Member'
+  const canManage = profile?.role === 'admin' || profile?.role === 'captain' || profile?.role === 'coach'
   const joined = user.created_at ? new Date(user.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '—'
 
   const save = async () => {
@@ -91,7 +103,14 @@ export default function Settings() {
               </p>
             )}
             <p style={{ color: 'var(--color-mute)', fontSize: '0.85rem', marginTop: '1rem', lineHeight: 1.55 }}>
-              Admin roles (for posting announcements and managing the store) are assigned in the data-model phase.
+              {canManage
+                ? 'Your role gives you roster access.'
+                : 'Captains, coaches, and admins can edit their team’s roster and description. Ask an admin in the Discord if you need access.'}{' '}
+              {canManage && (
+                <Link to="/manage" style={{ color: 'var(--color-sky-bright)' }}>
+                  Manage your team →
+                </Link>
+              )}
             </p>
           </div>
 

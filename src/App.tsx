@@ -8,6 +8,7 @@ import Teams from './pages/Teams'
 import TeamDetail from './pages/TeamDetail'
 import Contact from './pages/Contact'
 import Settings from './pages/Settings'
+import ManageTeam from './pages/ManageTeam'
 
 export default function App() {
   return (
@@ -25,6 +26,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/manage"
+            element={
+              <ProtectedRoute>
+                <ManageTeam />
               </ProtectedRoute>
             }
           />

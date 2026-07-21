@@ -20,8 +20,10 @@ Settings page. Live data and payments come next.
 - ✅ Placeholder roster, products, and announcements (`src/data/placeholders.ts`)
 - ✅ Supabase client + auth provider (`src/lib/supabase.ts`, `src/lib/auth.tsx`)
 - ✅ Discord sign-in, account menu in the navbar, **Settings** page, protected routes
+- ✅ Supabase data model — teams, players, announcements, profiles (`supabase/migrations/`)
+- ✅ Roles: **admin** (full access), **captain** / **coach** (edit their own team's roster + description), **player** / **member** (read-only) — see [Roles & permissions](#roles--permissions)
 - ✅ Cloudflare Pages SPA routing (`public/_redirects`)
-- ⏳ Comments, store checkout, admin roles — upcoming phases
+- ⏳ Comments, store checkout — upcoming phases
 
 ## Prerequisites
 
@@ -98,12 +100,38 @@ until they're added, the "Sign in" button is inert and `/settings` shows a confi
 
 5. **Restart** `npm run dev` after creating `.env.local`.
 
+## Roles & permissions
+
+Run the SQL in `supabase/migrations/` in order, in the Supabase SQL editor:
+`001_schema.sql` (tables + RLS), then `supabase/seed.sql` (sample teams/players),
+then `002_team_roles.sql` (roles, scoping, the profile-self-promotion fix).
+
+Every signed-in user gets a `profiles` row (via a trigger on `auth.users`) with role
+`member` by default. Roles:
+
+| Role                | Can do |
+| ------------------- | ------ |
+| `admin`              | Everything — create/edit/delete any team, roster, or announcement; change anyone's role |
+| `captain` / `coach`  | Edit their **own** team's tagline/blurb and roster (add, edit, remove players) at `/manage` |
+| `player` / `member`  | Read-only; can edit their own display name in Settings |
+
+**Granting admin:** open `002_team_roles.sql` and add your Discord user ID to the
+`admin_discord_ids` array before running it (Discord app → User Settings → Advanced →
+enable Developer Mode, then right-click your name → Copy User ID). Anyone signing in
+for the first time with a listed ID becomes an admin automatically. For an account that
+already exists, promote it manually — see the comment above that array for the exact
+`update` statement.
+
+**Assigning captains/coaches:** there's no admin UI for this yet, so an admin runs one
+`update` against `profiles` (Supabase dashboard → Table Editor, or SQL editor) setting
+`role` to `captain`/`coach` and `team_id` to the team they run. The `/manage` page
+(linked from the account menu once you have access) picks up from there.
+
 ## Roadmap
 
 1. ~~Frontend skeleton~~ ✓
-2. ~~Discord sign-in + account menu + Settings~~ ✓ ← you are here
-3. Admin roles (multiple admins) + Supabase data model — announcements, comments, products, profiles (with RLS)
-4. Pages wired to live data
+2. ~~Discord sign-in + account menu + Settings~~ ✓
+3. ~~Supabase data model + roles (admin/captain/coach) with RLS~~ ✓ ← you are here
+4. Admin UI for assigning roles + posting announcements
 5. Store + Stripe checkout
-6. Admin panel
-7. Deploy to Cloudflare Pages
+6. Deploy to Cloudflare Pages
