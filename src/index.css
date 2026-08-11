@@ -3,6 +3,11 @@
 /* ─────────────────────────────────────────────
    RzRevelation — design tokens
    navy = field · orange = heat/action · sky = cool trim · ink = depth
+
+   Two themes. The brand palette below is fixed; everything a surface or a
+   piece of text actually reads from is a semantic token further down, and
+   `:root[data-theme="light"]` re-points those. Add new colours as semantic
+   tokens or light mode won't know about them.
    ───────────────────────────────────────────── */
 @theme {
   --color-navy-900: #0A1628;
@@ -22,6 +27,88 @@
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
+/* ── theme: dark (default) ────────────────── */
+:root {
+  color-scheme: dark;
+
+  /* page */
+  --page-bg: var(--color-navy-900);
+  --glow-sky: rgba(78, 168, 232, 0.12);
+  --glow-orange: rgba(255, 106, 26, 0.10);
+  --grid-line: rgba(132, 153, 181, 0.05);
+
+  /* surfaces */
+  --surface-1: var(--color-navy-800);   /* panel top */
+  --surface-2: var(--color-navy-900);   /* panel bottom */
+  --surface-raised: var(--color-navy-700);
+  --surface-inset: rgba(78, 168, 232, 0.05);
+  --field-bg: var(--color-navy-900);
+  --nav-bg: rgba(10, 22, 40, 0.78);
+  --hud-bg: rgba(5, 8, 15, 0.5);
+  --footer-fade: rgba(5, 8, 15, 0.6);
+
+  /* lines */
+  --border: rgba(132, 153, 181, 0.16);
+  --border-soft: rgba(132, 153, 181, 0.12);
+  --border-strong: rgba(132, 153, 181, 0.28);
+
+  /* depth */
+  --shadow-panel: 0 18px 40px -22px rgba(0, 0, 0, 0.9);
+  --shadow-menu: 0 22px 50px -24px rgba(0, 0, 0, 0.95);
+
+  /* accents that need a different value when they sit on a hover fill */
+  --orange-hover: #FF8A3D;
+  --hover-fg: #ffffff;
+  --tag-sky-bg: rgba(78, 168, 232, 0.10);
+  --tag-sky-border: rgba(78, 168, 232, 0.30);
+  --tag-orange-bg: rgba(255, 106, 26, 0.10);
+  --tag-orange-border: rgba(255, 106, 26, 0.35);
+  --ghost-ring: rgba(78, 168, 232, 0.60);
+  --ghost-hover-bg: rgba(78, 168, 232, 0.12);
+}
+
+/* ── theme: light ─────────────────────────── */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  /* text: the brand text colours flip to readable-on-white equivalents */
+  --color-fog: #16233A;
+  --color-mute: #5A6B85;
+  --color-sky: #0E68AC;
+  --color-sky-bright: #0A5A97;
+  --color-orange-bright: #C2450A;
+
+  --page-bg: #F4F7FB;
+  --glow-sky: rgba(78, 168, 232, 0.18);
+  --glow-orange: rgba(255, 106, 26, 0.12);
+  --grid-line: rgba(28, 58, 102, 0.06);
+
+  --surface-1: #FFFFFF;
+  --surface-2: #F8FBFE;
+  --surface-raised: #E6EDF7;
+  --surface-inset: rgba(78, 168, 232, 0.08);
+  --field-bg: #FFFFFF;
+  --nav-bg: rgba(244, 247, 251, 0.85);
+  --hud-bg: rgba(255, 255, 255, 0.72);
+  --footer-fade: rgba(28, 58, 102, 0.06);
+
+  --border: rgba(28, 58, 102, 0.16);
+  --border-soft: rgba(28, 58, 102, 0.10);
+  --border-strong: rgba(28, 58, 102, 0.26);
+
+  --shadow-panel: 0 18px 40px -26px rgba(10, 22, 40, 0.45);
+  --shadow-menu: 0 22px 50px -28px rgba(10, 22, 40, 0.35);
+
+  --orange-hover: #E85E12;
+  --hover-fg: #0B2440;
+  --tag-sky-bg: rgba(78, 168, 232, 0.14);
+  --tag-sky-border: rgba(14, 104, 172, 0.35);
+  --tag-orange-bg: rgba(255, 106, 26, 0.12);
+  --tag-orange-border: rgba(194, 69, 10, 0.35);
+  --ghost-ring: rgba(14, 104, 172, 0.55);
+  --ghost-hover-bg: rgba(78, 168, 232, 0.14);
+}
+
 /* ── base ─────────────────────────────────── */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
@@ -32,12 +119,13 @@ body {
   font-family: var(--font-body);
   color: var(--color-fog);
   background:
-    radial-gradient(1100px 560px at 50% -8%, rgba(78, 168, 232, 0.12), transparent 60%),
-    radial-gradient(820px 480px at 92% 6%, rgba(255, 106, 26, 0.10), transparent 55%),
-    var(--color-navy-900);
+    radial-gradient(1100px 560px at 50% -8%, var(--glow-sky), transparent 60%),
+    radial-gradient(820px 480px at 92% 6%, var(--glow-orange), transparent 55%),
+    var(--page-bg);
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* faint HUD grid overlay — the world this brand lives in */
@@ -48,8 +136,8 @@ body::before {
   pointer-events: none;
   z-index: 0;
   background-image:
-    linear-gradient(rgba(132, 153, 181, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(132, 153, 181, 0.05) 1px, transparent 1px);
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 64px 64px;
   mask-image: radial-gradient(circle at 50% 30%, black, transparent 85%);
 }
@@ -107,14 +195,14 @@ h1, h2, h3, h4 {
 /* panel = clipped surface card with an accent edge on hover */
 .panel {
   position: relative;
-  background: linear-gradient(180deg, var(--color-navy-800), var(--color-navy-900));
-  border: 1px solid rgba(132, 153, 181, 0.16);
+  background: linear-gradient(180deg, var(--surface-1), var(--surface-2));
+  border: 1px solid var(--border);
   transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 .panel:hover {
   transform: translateY(-4px);
   border-color: rgba(255, 106, 26, 0.55);
-  box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 106, 26, 0.25);
+  box-shadow: var(--shadow-panel), 0 0 0 1px rgba(255, 106, 26, 0.25);
 }
 /* sky-trim corner bracket pinned to a panel */
 .panel .bracket {
@@ -145,14 +233,14 @@ h1, h2, h3, h4 {
 .btn:active { transform: translateY(1px); }
 
 .btn-primary { background: var(--color-orange); color: var(--color-ink); }
-.btn-primary:hover { background: var(--color-orange-bright); filter: drop-shadow(0 8px 18px rgba(255, 106, 26, 0.35)); }
+.btn-primary:hover { background: var(--orange-hover); filter: drop-shadow(0 8px 18px rgba(255, 106, 26, 0.35)); }
 
 .btn-ghost {
   background: transparent;
   color: var(--color-sky-bright);
-  box-shadow: inset 0 0 0 1px rgba(78, 168, 232, 0.6);
+  box-shadow: inset 0 0 0 1px var(--ghost-ring);
 }
-.btn-ghost:hover { background: rgba(78, 168, 232, 0.12); color: #fff; }
+.btn-ghost:hover { background: var(--ghost-hover-bg); color: var(--hover-fg); }
 
 .btn-block { width: 100%; }
 
@@ -164,10 +252,10 @@ h1, h2, h3, h4 {
   text-transform: uppercase;
   padding: 0.28rem 0.6rem;
   color: var(--color-sky-bright);
-  background: rgba(78, 168, 232, 0.1);
-  border: 1px solid rgba(78, 168, 232, 0.3);
+  background: var(--tag-sky-bg);
+  border: 1px solid var(--tag-sky-border);
 }
-.tag-orange { color: var(--color-orange-bright); background: rgba(255, 106, 26, 0.1); border-color: rgba(255, 106, 26, 0.35); }
+.tag-orange { color: var(--color-orange-bright); background: var(--tag-orange-bg); border-color: var(--tag-orange-border); }
 
 /* ── inputs ───────────────────────────────── */
 .field {
@@ -175,12 +263,12 @@ h1, h2, h3, h4 {
   font-family: var(--font-body);
   font-size: 0.95rem;
   color: var(--color-fog);
-  background: var(--color-navy-900);
-  border: 1px solid rgba(132, 153, 181, 0.22);
+  background: var(--field-bg);
+  border: 1px solid var(--border-strong);
   padding: 0.8rem 0.95rem;
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
-.field::placeholder { color: rgba(132, 153, 181, 0.7); }
+.field::placeholder { color: var(--color-mute); opacity: 0.8; }
 .field:focus {
   outline: none;
   border-color: var(--color-sky);
@@ -238,10 +326,10 @@ h1, h2, h3, h4 {
 /* ── nav ──────────────────────────────────── */
 .nav {
   position: sticky; top: 0; z-index: 50;
-  background: rgba(10, 22, 40, 0.78);
+  background: var(--nav-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(132, 153, 181, 0.14);
+  border-bottom: 1px solid var(--border-soft);
 }
 .navlink {
   font-family: var(--font-display);
@@ -259,28 +347,39 @@ h1, h2, h3, h4 {
   height: 2px; background: var(--color-orange);
 }
 .wordmark { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.04em; font-size: 1.15rem; }
-.logo-badge {
-  width: 34px; height: 34px;
-  display: grid; place-items: center;
-  background: var(--color-orange);
-  color: var(--color-ink);
-  font-family: var(--font-display);
-  font-weight: 700; font-size: 0.95rem;
-  clip-path: polygon(0 0, calc(100% - 7px) 0, 100% 7px, 100% 100%, 7px 100%, 0 calc(100% - 7px));
+.logo-mark {
+  height: 36px;
+  width: auto;
+  flex-shrink: 0;
 }
+
+/* theme toggle — same silhouette as the avatar button */
+.theme-btn {
+  display: grid; place-items: center;
+  width: 38px; height: 38px;
+  padding: 0; cursor: pointer;
+  background: transparent;
+  color: var(--color-mute);
+  border: 1px solid var(--border-strong);
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+.theme-btn:hover { color: var(--color-orange); border-color: var(--color-orange); }
 
 /* ── footer ───────────────────────────────── */
 .footer {
   margin-top: 4rem;
-  border-top: 1px solid rgba(132, 153, 181, 0.14);
-  background: linear-gradient(180deg, transparent, rgba(5, 8, 15, 0.6));
+  border-top: 1px solid var(--border-soft);
+  background: linear-gradient(180deg, transparent, var(--footer-fade));
 }
 .footer-link { display: block; color: var(--color-mute); font-size: 0.92rem; padding: 0.28rem 0; transition: color 0.16s ease; }
 .footer-link:hover { color: var(--color-sky-bright); }
 .social-link { font-family: var(--font-mono); font-size: 0.78rem; letter-spacing: 0.08em; color: var(--color-mute); transition: color 0.16s ease; }
 .social-link:hover { color: var(--color-orange-bright); }
 
-/* ── player avatar placeholder ────────────── */
+/* ── player avatar / character art plate ──── */
+/* Stays dark in both themes on purpose — it's an art plate, and the
+   character portraits are lit for a dark background. */
 .avatar {
   aspect-ratio: 4 / 5;
   display: grid;
@@ -301,6 +400,15 @@ h1, h2, h3, h4 {
 }
 .avatar-tag {
   position: absolute; bottom: 10px; left: 10px; z-index: 2;
+}
+/* character portrait filling the plate */
+.avatar-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
 }
 
 /* ── product placeholder swatch ───────────── */
@@ -329,9 +437,9 @@ h1, h2, h3, h4 {
   display: grid; place-items: center;
   width: 38px; height: 38px;
   padding: 0; cursor: pointer;
-  background: var(--color-navy-700);
+  background: var(--surface-raised);
   color: var(--color-fog);
-  border: 1px solid rgba(132, 153, 181, 0.28);
+  border: 1px solid var(--border-strong);
   font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
   overflow: hidden;
   transition: border-color 0.18s ease, transform 0.18s ease;
@@ -342,9 +450,9 @@ h1, h2, h3, h4 {
 .menu {
   position: absolute; right: 0; top: calc(100% + 10px);
   width: 232px; z-index: 60;
-  background: linear-gradient(180deg, var(--color-navy-800), var(--color-navy-900));
-  border: 1px solid rgba(132, 153, 181, 0.2);
-  box-shadow: 0 22px 50px -24px rgba(0, 0, 0, 0.95);
+  background: linear-gradient(180deg, var(--surface-1), var(--surface-2));
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-menu);
 }
 .menu-item {
   display: flex; align-items: center; gap: 0.6rem;
@@ -354,5 +462,90 @@ h1, h2, h3, h4 {
   background: transparent; border: none; cursor: pointer;
   transition: background 0.14s ease, color 0.14s ease;
 }
-.menu-item:hover { background: rgba(78, 168, 232, 0.1); color: #fff; }
+.menu-item:hover { background: var(--ghost-hover-bg); color: var(--hover-fg); }
 .menu-item-danger:hover { background: rgba(255, 106, 26, 0.12); color: var(--color-orange-bright); }
+
+/* ── hero picker ──────────────────────────── */
+.hero-trigger {
+  display: flex; align-items: center; gap: 0.7rem;
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-fog);
+  background: var(--field-bg);
+  border: 1px solid var(--border-strong);
+  transition: border-color 0.18s ease;
+}
+.hero-trigger:hover { border-color: var(--color-sky); }
+
+/* small square portrait — dark plate, same reasoning as .avatar */
+.hero-chip {
+  position: relative;
+  flex-shrink: 0;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  overflow: hidden;
+  background: radial-gradient(120% 120% at 30% 20%, #1b3050, #0A1628 75%);
+  color: rgba(234, 241, 250, 0.85);
+  font-family: var(--font-display); font-weight: 700; font-size: 0.72rem;
+}
+.hero-chip img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+
+/* Sits in flow rather than floating: the roster editor is a .clip panel, and
+   clip-path would cut off anything overflowing its bounds. */
+.hero-pop {
+  margin-top: 0.4rem;
+  max-height: 340px;
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, var(--surface-1), var(--surface-2));
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-menu);
+}
+.hero-pop-head { padding: 0.6rem; border-bottom: 1px solid var(--border-soft); }
+.hero-filters { display: flex; gap: 0.35rem; margin-top: 0.5rem; flex-wrap: wrap; }
+.hero-filter {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.55rem;
+  cursor: pointer;
+  color: var(--color-mute);
+  background: transparent;
+  border: 1px solid var(--border);
+  transition: color 0.14s ease, border-color 0.14s ease, background 0.14s ease;
+}
+.hero-filter:hover { color: var(--color-fog); }
+.hero-filter[aria-pressed="true"] {
+  color: var(--color-orange-bright);
+  border-color: var(--tag-orange-border);
+  background: var(--tag-orange-bg);
+}
+
+.hero-grid {
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.4rem;
+}
+.hero-option {
+  display: flex; flex-direction: column; align-items: center; gap: 0.35rem;
+  padding: 0.45rem 0.3rem;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-fog);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  text-align: center;
+  transition: background 0.14s ease, border-color 0.14s ease;
+}
+.hero-option:hover { background: var(--surface-inset); border-color: var(--border); }
+.hero-option[aria-selected="true"] { border-color: var(--color-orange); background: var(--tag-orange-bg); }
+.hero-option .hero-chip { width: 52px; height: 52px; font-size: 0.85rem; }
+.hero-empty { padding: 1.2rem 0.6rem; text-align: center; color: var(--color-mute); font-size: 0.85rem; }

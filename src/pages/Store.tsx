@@ -18,8 +18,8 @@ export default function Store() {
             style={{
               marginBottom: '2rem',
               padding: '0.85rem 1.1rem',
-              background: 'rgba(78,168,232,0.08)',
-              border: '1px solid rgba(78,168,232,0.28)',
+              background: 'var(--tag-sky-bg)',
+              border: '1px solid var(--tag-sky-border)',
               fontFamily: 'var(--font-mono)',
               fontSize: '0.8rem',
               color: 'var(--color-sky-bright)',

@@ -16,7 +16,7 @@ export default function Footer() {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <span className="logo-badge clip-sm">Rz</span>
+              <img src="/logo.png" alt="" className="logo-mark" width={520} height={479} />
               <span className="wordmark">RzRevelation<span style={{ color: 'var(--color-orange)' }}>.</span></span>
             </div>
             <p style={{ color: 'var(--color-mute)', maxWidth: '32ch', lineHeight: 1.6 }}>

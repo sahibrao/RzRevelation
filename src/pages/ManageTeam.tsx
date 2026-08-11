@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
+import HeroPicker from '../components/HeroPicker'
+import CharacterPortrait from '../components/CharacterPortrait'
+import { findCharacter } from '../lib/characters'
 import { useAuth } from '../lib/auth'
 import { useProfile } from '../lib/hooks'
 import { fetchTeams, updateTeamDetails, createPlayer, updatePlayer, deletePlayer } from '../lib/db'
@@ -123,6 +127,14 @@ export default function ManageTeam() {
 
           {team && <TeamDescriptionEditor team={team} onSaved={reload} />}
           {team && <RosterEditor team={team} onChanged={reload} />}
+
+          {isAdmin && (
+            <p style={{ color: 'var(--color-mute)', fontSize: '0.85rem', marginTop: '1.25rem', lineHeight: 1.55 }}>
+              This edits the public roster cards. To give someone site access — player, captain, or
+              coach — go to{' '}
+              <Link to="/admin" style={{ color: 'var(--color-sky-bright)' }}>Members &amp; roles</Link>.
+            </p>
+          )}
         </div>
       </section>
     </>
@@ -277,13 +289,16 @@ function PlayerRow({ player, onChanged }: { player: DbPlayer; onChanged: () => v
   }
 
   return (
-    <div className="flex items-center justify-between gap-3" style={{ flexWrap: 'wrap', padding: '0.6rem 0', borderBottom: '1px solid rgba(132,153,181,0.14)' }}>
-      <div>
-        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600 }}>
-          {player.gamertag} <span style={{ color: 'var(--color-mute)', fontWeight: 400, fontSize: '0.85rem' }}>· {player.full_name}</span>
-        </div>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-sky)', marginTop: 2 }}>
-          {player.role} · {player.main_hero}
+    <div className="flex items-center justify-between gap-3" style={{ flexWrap: 'wrap', padding: '0.6rem 0', borderBottom: '1px solid var(--border-soft)' }}>
+      <div className="flex items-center gap-3">
+        <CharacterPortrait character={findCharacter(player.main_hero)} name={player.main_hero} />
+        <div>
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600 }}>
+            {player.gamertag} <span style={{ color: 'var(--color-mute)', fontWeight: 400, fontSize: '0.85rem' }}>· {player.full_name}</span>
+          </div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--color-sky)', marginTop: 2 }}>
+            {player.role} · {player.main_hero}
+          </div>
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -360,7 +375,7 @@ function PlayerForm({
   }
 
   return (
-    <div style={{ padding: '0.85rem 1rem', background: 'rgba(78, 168, 232, 0.05)', border: '1px solid rgba(132,153,181,0.16)' }}>
+    <div style={{ padding: '0.85rem 1rem', background: 'var(--surface-inset)', border: '1px solid var(--border)' }}>
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="gamertag">Gamertag</label>
@@ -377,8 +392,8 @@ function PlayerForm({
           </select>
         </div>
         <div>
-          <label className="label" htmlFor="mainHero">Character</label>
-          <input id="mainHero" className="field clip-sm" value={mainHero} onChange={(e) => setMainHero(e.target.value)} placeholder="e.g. Hela" />
+          <span className="label" id="mainHeroLabel">Character</span>
+          <HeroPicker id="mainHero" labelledBy="mainHeroLabel" value={mainHero} onChange={setMainHero} />
         </div>
         <div>
           <label className="label" htmlFor="accent">Accent</label>

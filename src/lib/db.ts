@@ -1,5 +1,14 @@
 import { supabase } from './supabase'
-import type { DbTeam, DbAnnouncement, DbProfile, DbPlayer } from './types'
+import type {
+  DbTeam,
+  DbAnnouncement,
+  DbProfile,
+  DbPlayer,
+  DbDiscordIdentity,
+  DbMemberInvite,
+  Member,
+  TeamRole,
+} from './types'
 import { teams as seedTeams, announcements as seedAnnouncements } from '../data/placeholders'
 
 // ── Fallback helpers (used when Supabase isn't configured) ───
@@ -151,5 +160,215 @@ export async function deletePlayer(playerId: string): Promise<MutationResult> {
   if (!supabase) return NOT_CONFIGURED
 
   const { error } = await supabase.from('players').delete().eq('id', playerId)
+  return { error: error?.message ?? null }
+}
+
+// ── Member management (admins only) ─────────────────────────────
+// Adding people to a team happens by Discord ID. If that account has already
+// signed in we apply the role straight away; if it hasn't, we park an invite
+// that the sign-up trigger claims on their first login. RLS restricts both
+// tables to admins — these calls just surface the rejection.
+
+/** Everyone with an account, joined to their Discord ID where we know it. */
+export async function fetchMembers(): Promise<Member[]> {
+  if (!supabase) return []
+
+  const [profiles, identities] = await Promise.all([
+    supabase.from('profiles').select('*').order('created_at'),
+    supabase.from('discord_identities').select('*'),
+  ])
+
+  if (profiles.error) {
+    console.error('[db] fetchMembers:', profiles.error.message)
+    return []
+  }
+  // non-admins simply get nothing back here; the page gates on role anyway
+  if (identities.error) console.error('[db] fetchMembers identities:', identities.error.message)
+
+  const byProfile = new Map(
+    ((identities.data ?? []) as DbDiscordIdentity[]).map((i) => [i.profile_id, i]),
+  )
+
+  return ((profiles.data ?? []) as DbProfile[]).map((p) => ({
+    ...p,
+    discord_id: byProfile.get(p.id)?.discord_id ?? null,
+    discord_username: byProfile.get(p.id)?.username ?? null,
+  }))
+}
+
+/** Invites for Discord accounts that haven't signed in yet. */
+export async function fetchMemberInvites(): Promise<DbMemberInvite[]> {
+  if (!supabase) return []
+
+  const { data, error } = await supabase
+    .from('member_invites')
+    .select('*')
+    .is('claimed_at', null)
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('[db] fetchMemberInvites:', error.message)
+    return []
+  }
+  return (data ?? []) as DbMemberInvite[]
+}
+
+type AddMemberInput = {
+  discordId: string
+  teamId: string
+  role: TeamRole
+  playerId?: string | null
+  displayName?: string | null
+  invitedBy: string
+}
+
+type AddMemberResult = MutationResult & {
+  /** 'linked' — applied to a live account. 'invited' — waiting on first sign-in. */
+  outcome?: 'linked' | 'invited'
+  member?: Member
+}
+
+export async function addTeamMember(input: AddMemberInput): Promise<AddMemberResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  const { data: identity, error: lookupError } = await supabase
+    .from('discord_identities')
+    .select('profile_id')
+    .eq('discord_id', input.discordId)
+    .maybeSingle()
+
+  if (lookupError) return { error: lookupError.message }
+
+  // Already signed in at least once — apply the role now.
+  if (identity) {
+    const profileId = (identity as Pick<DbDiscordIdentity, 'profile_id'>).profile_id
+    const { data, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', profileId)
+      .single()
+    if (profileError) return { error: profileError.message }
+
+    const existing = data as DbProfile
+
+    // Demoting an admin here would be a one-way trip — there's no UI to undo it.
+    if (existing.role === 'admin') {
+      return {
+        error: `${existing.display_name ?? 'That account'} is an org admin. Admin is granted in SQL, so it has to be changed there too.`,
+      }
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ role: input.role, team_id: input.teamId })
+      .eq('id', profileId)
+    if (error) return { error: error.message }
+
+    if (input.playerId) {
+      const link = await linkPlayerToProfile(input.playerId, profileId)
+      if (link.error) return { error: link.error }
+    }
+
+    return {
+      error: null,
+      outcome: 'linked',
+      member: {
+        ...existing,
+        role: input.role,
+        team_id: input.teamId,
+        discord_id: input.discordId,
+        discord_username: null,
+      },
+    }
+  }
+
+  // No account yet — park it until they sign in with Discord.
+  const { error } = await supabase.from('member_invites').upsert(
+    {
+      discord_id: input.discordId,
+      display_name: input.displayName?.trim() || null,
+      team_id: input.teamId,
+      role: input.role,
+      player_id: input.playerId || null,
+      invited_by: input.invitedBy,
+      claimed_at: null,
+      claimed_by: null,
+    },
+    { onConflict: 'discord_id' },
+  )
+  if (error) return { error: error.message }
+  return { error: null, outcome: 'invited' }
+}
+
+export async function updateMember(
+  profileId: string,
+  updates: { role?: TeamRole; team_id?: string | null },
+): Promise<MutationResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  const { error } = await supabase.from('profiles').update(updates).eq('id', profileId)
+  return { error: error?.message ?? null }
+}
+
+/** Drop someone off their team: back to plain member, roster spot released. */
+export async function removeMemberFromTeam(profileId: string): Promise<MutationResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  const { error: unlinkError } = await supabase
+    .from('players')
+    .update({ profile_id: null })
+    .eq('profile_id', profileId)
+  if (unlinkError) return { error: unlinkError.message }
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ role: 'member', team_id: null })
+    .eq('id', profileId)
+  return { error: error?.message ?? null }
+}
+
+/**
+ * Point a roster card at an account (or clear it). One account can only hold
+ * one spot, so any previous card for that profile is released first.
+ */
+export async function linkPlayerToProfile(
+  playerId: string,
+  profileId: string | null,
+): Promise<MutationResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  if (profileId) {
+    const { error: clearError } = await supabase
+      .from('players')
+      .update({ profile_id: null })
+      .eq('profile_id', profileId)
+      .neq('id', playerId)
+    if (clearError) return { error: clearError.message }
+  }
+
+  const { error } = await supabase
+    .from('players')
+    .update({ profile_id: profileId })
+    .eq('id', playerId)
+  return { error: error?.message ?? null }
+}
+
+export async function updateMemberInvite(
+  discordId: string,
+  updates: { role?: TeamRole; team_id?: string; player_id?: string | null },
+): Promise<MutationResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  const { error } = await supabase
+    .from('member_invites')
+    .update(updates)
+    .eq('discord_id', discordId)
+  return { error: error?.message ?? null }
+}
+
+export async function deleteMemberInvite(discordId: string): Promise<MutationResult> {
+  if (!supabase) return NOT_CONFIGURED
+
+  const { error } = await supabase.from('member_invites').delete().eq('discord_id', discordId)
   return { error: error?.message ?? null }
 }

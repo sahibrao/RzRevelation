@@ -83,9 +83,9 @@ export default function Contact() {
                   <button className="btn btn-primary" type="submit" style={{ marginTop: '1.5rem' }}>
                     Send message
                   </button>
-                  <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--color-mute)', marginTop: '0.9rem' }}>
+                  {/* <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--color-mute)', marginTop: '0.9rem' }}>
                     Form delivery is connected in a later build phase.
-                  </p>
+                  </p> */}
                 </form>
               )}
             </div>
@@ -100,7 +100,7 @@ export default function Contact() {
               <div className="flex flex-col gap-4">
                 {reachOut.map((r) => (
                   <a key={r.label} href={r.href} target="_blank" rel="noreferrer" className="flex items-center justify-between"
-                     style={{ borderBottom: '1px solid rgba(132,153,181,0.12)', paddingBottom: '0.7rem' }}>
+                     style={{ borderBottom: '1px solid var(--border-soft)', paddingBottom: '0.7rem' }}>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem', letterSpacing: '0.12em', color: 'var(--color-mute)' }}>
                       {r.label}
                     </span>

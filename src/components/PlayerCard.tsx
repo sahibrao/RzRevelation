@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { characterImage } from '../lib/characters'
 import type { DbPlayer } from '../lib/types'
 
 function initials(tag: string) {
@@ -5,11 +7,18 @@ function initials(tag: string) {
 }
 
 export default function PlayerCard({ player }: { player: DbPlayer }) {
+  const [artBroken, setArtBroken] = useState(false)
+  const art = artBroken ? null : characterImage(player.main_hero)
+
   return (
     <article className="panel clip">
       <span className="bracket" />
       <div className={`avatar avatar-${player.accent}`}>
-        <span aria-hidden="true">{initials(player.gamertag)}</span>
+        {art ? (
+          <img className="avatar-art" src={art} alt="" loading="lazy" onError={() => setArtBroken(true)} />
+        ) : (
+          <span aria-hidden="true">{initials(player.gamertag)}</span>
+        )}
         <span className="avatar-tag">
           <span className={player.accent === 'orange' ? 'tag tag-orange' : 'tag'}>{player.main_hero}</span>
         </span>

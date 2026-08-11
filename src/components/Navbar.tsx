@@ -5,6 +5,7 @@ import { useAuth } from '../lib/auth'
 import { useProfile } from '../lib/hooks'
 import { avatarUrl, displayName, initials } from '../lib/user'
 import AccountMenu from './AccountMenu'
+import ThemeToggle from './ThemeToggle'
 
 const links = [
   { to: '/', label: 'Home', end: true },
@@ -17,7 +18,7 @@ const links = [
 function Wordmark() {
   return (
     <NavLink to="/" className="flex items-center gap-3" aria-label={`${ORG.name} home`}>
-      <span className="logo-badge clip-sm">Rz</span>
+      <img src="/logo.png" alt="" className="logo-mark" width={520} height={479} />
       <span className="wordmark">
         RZREVELATION<span style={{ color: 'var(--color-orange)' }}>.</span>
       </span>
@@ -29,7 +30,8 @@ export default function Navbar() {
   const [open, setOpen] = useState(false)
   const { user, loading, signInWithDiscord, signOut } = useAuth()
   const { profile } = useProfile()
-  const canManage = profile?.role === 'admin' || profile?.role === 'captain' || profile?.role === 'coach'
+  const isAdmin = profile?.role === 'admin'
+  const canManage = isAdmin || profile?.role === 'captain' || profile?.role === 'coach'
   const navigate = useNavigate()
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
@@ -54,6 +56,7 @@ export default function Navbar() {
           <a className="btn btn-primary" href={socials.discord} target="_blank" rel="noreferrer">
             Join the Discord
           </a>
+          <ThemeToggle />
           <AccountMenu />
         </div>
 
@@ -99,6 +102,8 @@ export default function Navbar() {
               </NavLink>
             ))}
 
+            <ThemeToggle variant="link" />
+
             <div className="rule" style={{ margin: '0.85rem 0' }} />
 
             {!loading && user ? (
@@ -131,6 +136,19 @@ export default function Navbar() {
                     }}
                   >
                     Manage team
+                  </button>
+                )}
+                {isAdmin && (
+                  <button
+                    className="navlink"
+                    type="button"
+                    style={{ padding: '0.6rem 0', textAlign: 'left' }}
+                    onClick={() => {
+                      setOpen(false)
+                      navigate('/admin')
+                    }}
+                  >
+                    Members &amp; roles
                   </button>
                 )}
                 <button

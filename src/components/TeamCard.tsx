@@ -2,7 +2,10 @@ import { Link } from 'react-router-dom'
 import type { DbTeam } from '../lib/types'
 
 export default function TeamCard({ team }: { team: DbTeam }) {
-  const accentColor = team.accent === 'orange' ? 'var(--color-orange)' : 'var(--color-sky)'
+  // The bar is raw brand colour; the link text uses the theme-aware variants so
+  // it stays readable on a white card in light mode.
+  const barColor = team.accent === 'orange' ? 'var(--color-orange)' : 'var(--color-sky)'
+  const linkColor = team.accent === 'orange' ? 'var(--color-orange-bright)' : 'var(--color-sky-bright)'
 
   return (
     <Link
@@ -12,7 +15,7 @@ export default function TeamCard({ team }: { team: DbTeam }) {
       aria-label={`${team.name} roster`}
     >
       <span className="bracket" />
-      <div style={{ height: 4, background: accentColor }} />
+      <div style={{ height: 4, background: barColor }} />
       <div style={{ padding: '1.5rem 1.5rem 1.4rem' }}>
         <p className="eyebrow">{team.tagline}</p>
         <h3 style={{ fontSize: '1.7rem', margin: '0.7rem 0 0.6rem' }}>{team.name}</h3>
@@ -41,7 +44,7 @@ export default function TeamCard({ team }: { team: DbTeam }) {
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.74rem', color: 'var(--color-mute)' }}>
             {team.players.length} players
           </span>
-          <span style={{ color: accentColor, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.92rem' }}>
+          <span style={{ color: linkColor, fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '0.92rem' }}>
             View roster →
           </span>
         </div>

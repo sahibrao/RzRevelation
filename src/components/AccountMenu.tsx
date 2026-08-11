@@ -7,7 +7,8 @@ import { avatarUrl, displayName, initials } from '../lib/user'
 export default function AccountMenu() {
   const { user, loading, signInWithDiscord, signOut } = useAuth()
   const { profile } = useProfile()
-  const canManage = profile?.role === 'admin' || profile?.role === 'captain' || profile?.role === 'coach'
+  const isAdmin = profile?.role === 'admin'
+  const canManage = isAdmin || profile?.role === 'captain' || profile?.role === 'coach'
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
@@ -51,7 +52,7 @@ export default function AccountMenu() {
 
       {open && (
         <div className="menu clip-sm" role="menu">
-          <div style={{ padding: '0.9rem 0.85rem', borderBottom: '1px solid rgba(132,153,181,0.14)' }}>
+          <div style={{ padding: '0.9rem 0.85rem', borderBottom: '1px solid var(--border-soft)' }}>
             <div style={{ fontFamily: 'var(--font-display)', fontWeight: 600, lineHeight: 1.2 }}>{name}</div>
             {user.email && (
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--color-mute)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -93,6 +94,23 @@ export default function AccountMenu() {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
               Manage team
+            </button>
+          )}
+
+          {isAdmin && (
+            <button
+              className="menu-item"
+              role="menuitem"
+              type="button"
+              onClick={() => {
+                setOpen(false)
+                navigate('/admin')
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              Members & roles
             </button>
           )}
 

@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RzRevelation — Marvel Rivals</title>
     <meta name="description" content="RzRevelation — a competitive Marvel Rivals house. Three rosters, one community. Follow the teams, read the latest, and rep the brand." />
@@ -11,6 +12,24 @@
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   </head>
   <body>
+    <!-- Resolve the theme before first paint so light mode doesn't flash navy.
+         Mirrors src/lib/theme.tsx — keep the storage key and logic in sync. -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('rz-theme')
+          var theme =
+            stored === 'light' || stored === 'dark'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: light)').matches
+                ? 'light'
+                : 'dark'
+          document.documentElement.dataset.theme = theme
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark'
+        }
+      })()
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

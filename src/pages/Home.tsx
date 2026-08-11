@@ -61,8 +61,8 @@ export default function Home() {
               alignItems: 'center',
               gap: '0.7rem',
               padding: '0.6rem 1rem',
-              background: 'rgba(5,8,15,0.5)',
-              border: '1px solid rgba(132,153,181,0.16)',
+              background: 'var(--hud-bg)',
+              border: '1px solid var(--border)',
               fontFamily: 'var(--font-mono)',
               fontSize: '0.8rem',
               color: 'var(--color-mute)',
@@ -126,7 +126,7 @@ export default function Home() {
               position: 'relative',
               overflow: 'hidden',
               padding: 'clamp(2.5rem, 5vw, 4rem)',
-              background: 'linear-gradient(120deg, var(--color-navy-700), var(--color-navy-900) 70%)',
+              background: 'linear-gradient(120deg, var(--surface-raised), var(--surface-2) 70%)',
               border: '1px solid rgba(255,106,26,0.3)',
             }}
           >

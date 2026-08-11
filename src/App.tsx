@@ -9,6 +9,7 @@ import TeamDetail from './pages/TeamDetail'
 import Contact from './pages/Contact'
 import Settings from './pages/Settings'
 import ManageTeam from './pages/ManageTeam'
+import Admin from './pages/Admin'
 
 export default function App() {
   return (
@@ -34,6 +35,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ManageTeam />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <Admin />
               </ProtectedRoute>
             }
           />
